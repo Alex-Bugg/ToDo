@@ -36,9 +36,21 @@ export default {
   }),
   methods: {
     submitHendler() {
-      console.log(this.title, this.desc);
+      const todoItem = {
+        id: Date.now(),
+        title: this.title,
+        desc: this.desc,
+        checked: false
+      };
+      if (localStorage.getItem("todoList")) {
+        const local = JSON.parse(localStorage.getItem("todoList"));
+        localStorage.setItem("todoList", JSON.stringify([...local, todoItem]));
+      } else {
+        localStorage.setItem("todoList", JSON.stringify([todoItem]));
+      }
       this.title = "";
       this.desc = "";
+      this.$router.push("/");
     }
   }
 };

@@ -2,19 +2,65 @@
   <div class="todoitem">
     <div class="todoitem_wrap">
       <label>
-        <input class="todoitem_checkbox" type="checkbox" />
+        <input
+          @click="cheackedHandler"
+          class="todoitem_checkbox"
+          type="checkbox"
+          :checked="item.checked"
+        />
         <span class="todoitem_checkbox_new"></span>
       </label>
-      <p class="todoitem_id">id |</p>
-      <h3 class="todoitem_title">Title</h3>
-      <p class="todoitem_desc">desc</p>
+      <p :class="checked ? 'todoitem_title_line_through':''" class="todoitem_id">{{idx + 1}}|</p>
+      <h3 :class="checked ? 'todoitem_title_line_through':''" class="todoitem_title">{{item.title}}</h3>
+      <p :class="checked ? 'todoitem_title_line_through':''" class="todoitem_desc">{{item.desc}}</p>
     </div>
     <div class="todoitem_btn_wrap">
-      <button class="btn_item" type="button">&#10000;</button>
-      <button class="btn_item" type="button">&#10006;</button>
+      <button @click="$router.push(`/item/${item.id}`)" class="btn_item" type="button">&#10000;</button>
+      <button @click="activeDelete = !activeDelete" class="btn_item" type="button">&#10006;</button>
+      <div class="modal_delete" :class="activeDelete?'modal_delete_active':''">
+        <p class="modal_detele_parag">Are you sure?</p>
+        <div class="modal_delete_wrap_btn">
+          <button @click="deleteItem" class="modal_delete_btn" type="button">Yes</button>
+          <button @click="activeDelete = !activeDelete" class="modal_delete_btn" type="button">No</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    item: Object,
+    idx: Number
+  },
+  data() {
+    return {
+      checked: this.item.checked,
+      activeDelete: false
+    };
+  },
+  methods: {
+    cheackedHandler() {
+      this.checked = !this.checked;
+      const toDoitems = JSON.parse(localStorage.getItem("todoList"));
+      toDoitems.filter(toDoitem => {
+        if (toDoitem.id === this.item.id) {
+          toDoitem.checked = !toDoitem.checked;
+        }
+        localStorage.setItem("todoList", JSON.stringify(toDoitems));
+      });
+    },
+    deleteItem() {
+      this.activeDelete = !this.activeDelete;
+      const toDoitems = JSON.parse(localStorage.getItem("todoList"));
+      toDoitems.splice(this.idx - 1, 1);
+      this.$emit("deleteTodo", toDoitems);
+      localStorage.setItem("todoList", JSON.stringify(toDoitems));
+    }
+  }
+};
+</script>
 
 <style lang="scss">
 .todoitem {
@@ -62,6 +108,11 @@
     max-width: 150px;
     text-align: left;
   }
+  &_desc {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   &_wrap {
     width: 100%;
     display: flex;
@@ -71,10 +122,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
   }
   &_id {
     margin-right: 5px;
-    font-size: 14px;
   }
 }
 .btn_item {
@@ -92,5 +143,36 @@
     transform: scale(1.2);
     opacity: 0.7;
   }
+}
+.modal_delete {
+  transition: 0.5s;
+  transform: translateX(1000px);
+  opacity: 0;
+  min-width: 100px;
+  padding: 15px;
+  background: #35495e;
+  z-index: 5;
+  box-shadow: 0px 0px 31px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  position: absolute;
+  left: 60px;
+  top: -20px;
+  &_wrap_btn {
+    margin-top: 7px;
+    display: flex;
+  }
+  &_btn {
+    min-width: 35px;
+    background-color: #41b883;
+    color: aliceblue;
+    padding: 5px;
+    &:first-child {
+      margin-right: 5px;
+    }
+  }
+}
+.modal_delete_active {
+  transform: translateX(0);
+  opacity: 1;
 }
 </style>

@@ -4,11 +4,13 @@
     <router-view />
   </div>
 </template>
+
+
 <script>
-export default {
-  components: {}
-};
+export default {};
 </script>
+
+
 <style lang="scss">
 @import "@/assets/normalize.scss";
 .home {
@@ -19,6 +21,7 @@ export default {
     rgba(65, 184, 131, 1) 0%,
     rgba(53, 73, 94, 1) 100%
   );
+  overflow: hidden;
 }
 .logo {
   filter: drop-shadow(2px 4px 6px black);

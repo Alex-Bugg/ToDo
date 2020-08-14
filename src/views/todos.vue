@@ -3,11 +3,18 @@
     <div class="todolist_header">
       <router-link to="/addtodo" class="todolist_header_btn">Add todo</router-link>
     </div>
-    <div class="todolist_wrap">
-      <Todoitem />
-      <Todoitem />
-      <Todoitem />
-      <Todoitem />
+    <Loader v-if="loading" />
+    <div>
+      <div v-if="items.length" class="todolist_wrap">
+        <Todoitem
+          v-for="(item, idx) in items"
+          :key="item.id"
+          :item="item"
+          :idx="idx"
+          @deleteTodo="deleteTodo"
+        />
+      </div>
+      <p v-else class="todolist_exit">Not yet ToDo</p>
     </div>
   </div>
 </template>
@@ -16,6 +23,24 @@
 import Todoitem from "@/components/Todoitem";
 export default {
   name: "todos",
+  data() {
+    return {
+      items: [],
+      loading: true
+    };
+  },
+  mounted() {
+    const preTodoItem = JSON.parse(localStorage.getItem("todoList"));
+    if (preTodoItem !== null) {
+      this.items = preTodoItem;
+      this.loading = false;
+    }
+  },
+  methods: {
+    deleteTodo(items) {
+      this.items = items;
+    }
+  },
   components: { Todoitem }
 };
 </script>
@@ -29,6 +54,11 @@ export default {
   background-color: #35495e;
   box-shadow: 0px 0px 31px rgba(0, 0, 0, 0.3);
   border-radius: 15px;
+  &_exit {
+    font-size: 18px;
+    padding: 10px;
+    font-weight: bold;
+  }
   &_header {
     border-radius: 15px 15px 0 0;
     background-color: #41b883;

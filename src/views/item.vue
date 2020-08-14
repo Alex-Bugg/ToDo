@@ -5,20 +5,77 @@
       <h3 class="todolist_header_title">Change ToDo</h3>
     </div>
     <div class="todolist_wrapper">
-      <form action="submit" class="todolist_form">
-        <input class="todolist_input_title" type="text" placeholder="Title" />
-        <textarea class="todolist_textarea" cols="30" rows="10" placeholder="Description"></textarea>
-        <button class="todolist_btn" type="button">Change ToDo</button>
+      <Loader v-if="loading" />
+      <form @submit.prevent="changeToDO" v-else action="submit" class="todolist_form">
+        <input v-model="item.title" class="todolist_input_title" type="text" placeholder="Title" />
+        <textarea
+          v-model="item.desc"
+          class="todolist_textarea"
+          cols="30"
+          rows="10"
+          placeholder="Description"
+        ></textarea>
+        <button class="todolist_btn" type="submit">Change ToDo</button>
       </form>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  data: () => ({
+    item: {},
+    loading: true
+  }),
+  mounted() {
+    JSON.parse(localStorage.getItem("todoList")).forEach(el => {
+      if (el.id === +this.$route.params.id) {
+        this.loading = false;
+        this.item = el;
+      }
+    });
+  },
+  methods: {
+    changeToDO() {
+      const todoList = JSON.parse(localStorage.getItem("todoList"));
+      if (todoList.length === 1) {
+        todoList[0].title = this.item.title;
+        todoList[0].desc = this.item.desc;
+      } else {
+        todoList.forEach(el => {
+          if (el.id === +this.$route.params.id) {
+            el.title = this.item.title;
+            el.desc = this.item.desc;
+          }
+        });
+      }
+      localStorage.setItem("todoList", JSON.stringify(todoList));
+    }
+  }
+};
+</script>
 
 <style lang="scss">
 .todolist_header {
   position: relative;
 }
 .todolist {
+  max-width: 600px;
+  min-height: 500px;
+  margin: 0 auto;
+  color: aliceblue;
+  background-color: #35495e;
+  box-shadow: 0px 0px 31px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  &_header {
+    position: relative;
+    border-radius: 15px 15px 0 0;
+    background-color: #41b883;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   &_wrapper {
     padding: 10px;
   }
