@@ -33,8 +33,8 @@ export default {
     const preTodoItem = JSON.parse(localStorage.getItem("todoList"));
     if (preTodoItem !== null) {
       this.items = preTodoItem;
-      this.loading = false;
     }
+    this.loading = false;
   },
   methods: {
     deleteTodo(items) {

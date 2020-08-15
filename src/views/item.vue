@@ -50,6 +50,7 @@ export default {
         });
       }
       localStorage.setItem("todoList", JSON.stringify(todoList));
+      this.$router.push("/");
     }
   }
 };
